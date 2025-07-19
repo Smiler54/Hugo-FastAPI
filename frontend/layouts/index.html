@@ -1,0 +1,86 @@
+{{ define "main" }}
+<h1>Welcome to the Hugo-FastAPI News Platform</h1>
+
+<!-- Create New Post Form (only shown when logged in) -->
+<div id="create-post-form" style="display: none;">
+  <h2>Create New Post</h2>
+  <form id="post-form">
+    <div>
+      <label for="title">Title:</label>
+      <input type="text" id="title" name="title" required>
+    </div>
+    <div>
+      <label for="text">Content:</label>
+      <textarea id="text" name="text" required></textarea>
+    </div>
+    <button type="submit">Create Post</button>
+  </form>
+  <div id="form-message"></div>
+</div>
+
+<div id="posts-list">Loading posts...</div>
+
+<script>
+// Check if user is logged in and show/hide create post form
+function checkAuthForPostForm() {
+    const token = localStorage.getItem('token');
+    const createForm = document.getElementById('create-post-form');
+    if (token) {
+        createForm.style.display = 'block';
+    } else {
+        createForm.style.display = 'none';
+    }
+}
+
+// Create new post
+document.getElementById('post-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const title = document.getElementById('title').value;
+  const text = document.getElementById('text').value;
+  
+  fetch('http://localhost:8000/posts/', {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ title, text })
+  })
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById('form-message').innerHTML = '<p style="color: green;">Post created successfully!</p>';
+    document.getElementById('post-form').reset();
+    loadPosts(); // Reload the posts list
+  })
+  .catch(error => {
+    document.getElementById('form-message').innerHTML = '<p style="color: red;">Failed to create post.</p>';
+  });
+});
+
+// Load posts function
+function loadPosts() {
+  fetch('http://localhost:8000/posts/')
+    .then(response => response.json())
+    .then(posts => {
+      if (!Array.isArray(posts) || posts.length === 0) {
+        document.getElementById('posts-list').innerHTML = '<p>No posts found.</p>';
+        return;
+      }
+      document.getElementById('posts-list').innerHTML = '<ul>' +
+        posts.map(post => `<li><a href="/post/${post.id}">${post.title}</a></li>`).join('') +
+        '</ul>';
+    })
+    .catch(() => {
+      document.getElementById('posts-list').innerHTML = '<p>Failed to load posts.</p>';
+    });
+}
+
+// Load posts on page load
+loadPosts();
+checkAuthForPostForm();
+
+// Listen for auth status changes
+window.addEventListener('storage', function(e) {
+    if (e.key === 'token') {
+        checkAuthForPostForm();
+    }
+});
+</script>
+{{ end }} 

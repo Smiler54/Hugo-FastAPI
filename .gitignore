@@ -1,0 +1,37 @@
+# Backend Python
+__pycache__/
+*.py[cod]
+backend/venv/
+.venv/
+.env
+backend/.env
+.pytest_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Frontend Hugo
+frontend/public/
+frontend/resources/
+frontend/.hugo_build.lock
+
+# Node.js (if used)
+node_modules/
+frontend/node_modules/
+
+# OS/editor
+.DS_Store
+*.swp
+
+# Logs
+*.log
+
+# Python build
+dist/
+build/
+*.egg-info/
+
+# Do NOT ignore the submodule!
+# Do NOT add this:
+# /frontend/themes/PaperMod/

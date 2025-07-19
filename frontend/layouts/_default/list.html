@@ -1,0 +1,20 @@
+{{ define "main" }}
+<h2>Posts</h2>
+<div id="posts-list">Loading posts...</div>
+<script>
+fetch('http://localhost:8000/posts/')
+  .then(response => response.json())
+  .then(posts => {
+    if (!Array.isArray(posts) || posts.length === 0) {
+      document.getElementById('posts-list').innerHTML = '<p>No posts found.</p>';
+      return;
+    }
+    document.getElementById('posts-list').innerHTML = '<ul>' +
+      posts.map(post => `<li><a href=\"/post/${post.id}\">${post.title}</a></li>`).join('') +
+      '</ul>';
+  })
+  .catch(() => {
+    document.getElementById('posts-list').innerHTML = '<p>Failed to load posts.</p>';
+  });
+</script>
+{{ end }} 

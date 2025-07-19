@@ -1,0 +1,99 @@
+{{ define "main" }}
+<article>
+    <div id="post-detail">Loading post...</div>
+    
+    <!-- Add Comment Form (only shown when logged in) -->
+    <div id="add-comment-form" style="display: none;">
+      <h3>Add Comment</h3>
+      <form id="comment-form">
+        <div>
+          <label for="comment-title">Title:</label>
+          <input type="text" id="comment-title" name="title" required>
+        </div>
+        <div>
+          <label for="comment-text">Comment:</label>
+          <textarea id="comment-text" name="text" required></textarea>
+        </div>
+        <button type="submit">Add Comment</button>
+      </form>
+      <div id="comment-message"></div>
+    </div>
+    
+    <script>
+    // Extract post ID from URL
+    const postId = window.location.pathname.split('/').pop();
+    
+    // Check if user is logged in and show/hide comment form
+    function checkAuthForCommentForm() {
+        const token = localStorage.getItem('token');
+        const commentForm = document.getElementById('add-comment-form');
+        if (token) {
+            commentForm.style.display = 'block';
+        } else {
+            commentForm.style.display = 'none';
+        }
+    }
+    
+    // Add comment
+    document.getElementById('comment-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const title = document.getElementById('comment-title').value;
+      const text = document.getElementById('comment-text').value;
+      
+      fetch(`http://localhost:8000/posts/${postId}/comments`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ title, text })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('comment-message').innerHTML = '<p style="color: green;">Comment added successfully!</p>';
+        document.getElementById('comment-form').reset();
+        loadComments(); // Reload comments
+      })
+      .catch(error => {
+        document.getElementById('comment-message').innerHTML = '<p style="color: red;">Failed to add comment.</p>';
+      });
+    });
+    
+    // Load post and comments
+    fetch(`http://localhost:8000/posts/${postId}`)
+      .then(response => response.json())
+      .then(post => {
+        let html = `<h2>${post.title}</h2><div>${post.text}</div>`;
+        html += '<section><h3>Comments</h3><div id="comments-list">Loading comments...</div></section>';
+        document.getElementById('post-detail').innerHTML = html;
+        checkAuthForCommentForm();
+        loadComments();
+      })
+      .catch(() => {
+        document.getElementById('post-detail').innerHTML = '<p>Failed to load post.</p>';
+      });
+    
+    // Load comments function
+    function loadComments() {
+      fetch(`http://localhost:8000/posts/${postId}/comments`)
+        .then(response => response.json())
+        .then(comments => {
+          if (!Array.isArray(comments) || comments.length === 0) {
+            document.getElementById('comments-list').innerHTML = '<p>No comments yet.</p>';
+            return;
+          }
+          document.getElementById('comments-list').innerHTML = '<ul>' +
+            comments.map(c => `<li><strong>${c.title}</strong>: ${c.text}</li>`).join('') +
+            '</ul>';
+        })
+        .catch(() => {
+          document.getElementById('comments-list').innerHTML = '<p>Failed to load comments.</p>';
+        });
+    }
+    
+    // Listen for auth status changes
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'token') {
+            checkAuthForCommentForm();
+        }
+    });
+    </script>
+</article>
+{{ end }} 
