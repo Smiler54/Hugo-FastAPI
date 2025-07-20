@@ -3,36 +3,21 @@
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
     <meta charset="UTF-8">
     <title>404 Page not found</title>
-    
-    
-    <style>
-        .nav { background: #f0f0f0; padding: 10px; margin-bottom: 20px; }
-        .auth-forms { display: none; }
-        .auth-forms.active { display: block; }
-        .user-info { display: none; }
-        .user-info.active { display: block; }
-        .form-group { margin: 10px 0; }
-        .form-group label { display: block; margin-bottom: 5px; }
-        .form-group input { width: 100%; padding: 8px; }
-        .btn { padding: 8px 16px; margin: 5px; cursor: pointer; }
-        .error { color: red; }
-        .success { color: green; }
-    </style>
 </head>
 <body>
-    <nav class="nav">
-        <div id="auth-buttons">
-            <button onclick="showLogin()" class="btn">Login</button>
-            <button onclick="showRegister()" class="btn">Register</button>
+    <nav class="nav-bar">
+        <div id="auth-buttons" class="nav-actions">
+            <button onclick="showLogin()" class="btn btn-primary">Login</button>
+            <button onclick="showRegister()" class="btn btn-secondary">Register</button>
         </div>
         <div id="user-info" class="user-info">
-            Welcome, <span id="user-name"></span>! 
-            <button onclick="logout()" class="btn">Logout</button>
+            Welcome, <span id="user-name"></span>!
+            <button onclick="logout()" class="btn btn-danger">Logout</button>
         </div>
     </nav>
 
     
-    <div id="login-form" class="auth-forms">
+    <section id="login-form" class="auth-forms card">
         <h2>Login</h2>
         <form id="login-form-element">
             <div class="form-group">
@@ -43,13 +28,13 @@
                 <label for="login-password">Password:</label>
                 <input type="password" id="login-password" required>
             </div>
-            <button type="submit" class="btn">Login</button>
+            <button type="submit" class="btn btn-primary">Login</button>
         </form>
         <div id="login-message"></div>
-    </div>
+    </section>
 
     
-    <div id="register-form" class="auth-forms">
+    <section id="register-form" class="auth-forms card">
         <h2>Register</h2>
         <form id="register-form-element">
             <div class="form-group">
@@ -64,15 +49,17 @@
                 <label for="register-password">Password:</label>
                 <input type="password" id="register-password" required>
             </div>
-            <button type="submit" class="btn">Register</button>
+            <button type="submit" class="btn btn-secondary">Register</button>
         </form>
         <div id="register-message"></div>
-    </div>
+    </section>
 
     <main>
         
-<h1>404 - Page Not Found</h1>
-<p>The page you are looking for does not exist.</p>
+<section class="card" style="text-align: center; margin-top: 4rem;">
+  <h1 class="page-title">404 - Page Not Found</h1>
+  <p>The page you are looking for does not exist.</p>
+</section>
 
     </main>
 
@@ -157,7 +144,7 @@
         function checkAuthStatus() {
             const token = localStorage.getItem('token');
             const userEmail = localStorage.getItem('userEmail');
-            
+
             if (token && userEmail) {
                 
                 document.getElementById('auth-buttons').style.display = 'none';

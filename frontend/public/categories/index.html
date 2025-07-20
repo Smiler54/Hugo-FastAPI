@@ -3,10 +3,57 @@
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
     <meta charset="UTF-8">
     <title>Categories</title>
-    
-    
 </head>
 <body>
+    <nav class="nav-bar">
+        <div id="auth-buttons" class="nav-actions">
+            <button onclick="showLogin()" class="btn btn-primary">Login</button>
+            <button onclick="showRegister()" class="btn btn-secondary">Register</button>
+        </div>
+        <div id="user-info" class="user-info">
+            Welcome, <span id="user-name"></span>!
+            <button onclick="logout()" class="btn btn-danger">Logout</button>
+        </div>
+    </nav>
+
+    
+    <section id="login-form" class="auth-forms card">
+        <h2>Login</h2>
+        <form id="login-form-element">
+            <div class="form-group">
+                <label for="login-email">Email:</label>
+                <input type="email" id="login-email" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password:</label>
+                <input type="password" id="login-password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <div id="login-message"></div>
+    </section>
+
+    
+    <section id="register-form" class="auth-forms card">
+        <h2>Register</h2>
+        <form id="register-form-element">
+            <div class="form-group">
+                <label for="register-name">Name:</label>
+                <input type="text" id="register-name" required>
+            </div>
+            <div class="form-group">
+                <label for="register-email">Email:</label>
+                <input type="email" id="register-email" required>
+            </div>
+            <div class="form-group">
+                <label for="register-password">Password:</label>
+                <input type="password" id="register-password" required>
+            </div>
+            <button type="submit" class="btn btn-secondary">Register</button>
+        </form>
+        <div id="register-message"></div>
+    </section>
+
     <main>
         
 <header class="page-header">
@@ -16,5 +63,115 @@
 <ul class="terms-tags">
 </ul>
     </main>
+
+    <script>
+        
+        checkAuthStatus();
+
+        function showLogin() {
+            hideAllForms();
+            document.getElementById('login-form').classList.add('active');
+        }
+
+        function showRegister() {
+            hideAllForms();
+            document.getElementById('register-form').classList.add('active');
+        }
+
+        function hideAllForms() {
+            document.querySelectorAll('.auth-forms').forEach(form => {
+                form.classList.remove('active');
+            });
+        }
+
+        
+        document.getElementById('login-form-element').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            fetch('http://localhost:8000/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.access_token) {
+                    localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('userEmail', email);
+                    document.getElementById('login-message').innerHTML = '<p class="success">Login successful!</p>';
+                    hideAllForms();
+                    checkAuthStatus();
+                } else {
+                    document.getElementById('login-message').innerHTML = '<p class="error">Login failed.</p>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('login-message').innerHTML = '<p class="error">Login failed.</p>';
+            });
+        });
+
+        
+        document.getElementById('register-form-element').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+
+            fetch('http://localhost:8000/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.id) {
+                    document.getElementById('register-message').innerHTML = '<p class="success">Registration successful! Please login.</p>';
+                    document.getElementById('register-form-element').reset();
+                } else {
+                    document.getElementById('register-message').innerHTML = '<p class="error">Registration failed.</p>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('register-message').innerHTML = '<p class="error">Registration failed.</p>';
+            });
+        });
+
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token');
+            const userEmail = localStorage.getItem('userEmail');
+
+            if (token && userEmail) {
+                
+                document.getElementById('auth-buttons').style.display = 'none';
+                document.getElementById('user-info').classList.add('active');
+                document.getElementById('user-name').textContent = userEmail;
+            } else {
+                
+                document.getElementById('auth-buttons').style.display = 'block';
+                document.getElementById('user-info').classList.remove('active');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userEmail');
+            checkAuthStatus();
+        }
+
+        
+        function getAuthHeaders() {
+            const token = localStorage.getItem('token');
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : ''
+            };
+        }
+    </script>
 </body>
 </html> 

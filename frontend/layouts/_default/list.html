@@ -1,6 +1,8 @@
 {{ define "main" }}
-<h2>Posts</h2>
-<div id="posts-list">Loading posts...</div>
+<h2 class="page-title">Posts</h2>
+<section class="card">
+  <div id="posts-list">Loading posts...</div>
+</section>
 <script>
 fetch('http://localhost:8000/posts/')
   .then(response => response.json())

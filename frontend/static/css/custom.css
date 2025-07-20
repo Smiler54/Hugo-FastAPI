@@ -1,0 +1,15 @@
+/* Custom overrides for Bootstrap styles */
+
+.card {
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+body {
+  background: #f8f9fa;
+}
+
+.page-title {
+  font-weight: 700;
+  margin-bottom: 2rem;
+} 

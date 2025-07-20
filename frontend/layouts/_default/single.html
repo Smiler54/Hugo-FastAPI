@@ -1,25 +1,25 @@
 {{ define "main" }}
-<article>
-    <div id="post-detail">Loading post...</div>
-    
-    <!-- Add Comment Form (only shown when logged in) -->
-    <div id="add-comment-form" style="display: none;">
-      <h3>Add Comment</h3>
-      <form id="comment-form">
-        <div>
-          <label for="comment-title">Title:</label>
-          <input type="text" id="comment-title" name="title" required>
-        </div>
-        <div>
-          <label for="comment-text">Comment:</label>
-          <textarea id="comment-text" name="text" required></textarea>
-        </div>
-        <button type="submit">Add Comment</button>
-      </form>
-      <div id="comment-message"></div>
-    </div>
-    
-    <script>
+<section class="card">
+  <div id="post-detail">Loading post...</div>
+
+  <!-- Add Comment Form (only shown when logged in) -->
+  <section id="add-comment-form" class="card" style="display: none; margin-top: 2rem;">
+    <h3>Add Comment</h3>
+    <form id="comment-form">
+      <div class="form-group">
+        <label for="comment-title">Title:</label>
+        <input type="text" id="comment-title" name="title" required>
+      </div>
+      <div class="form-group">
+        <label for="comment-text">Comment:</label>
+        <textarea id="comment-text" name="text" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Comment</button>
+    </form>
+    <div id="comment-message"></div>
+  </section>
+
+  <script>
     // Extract post ID from URL
     const postId = window.location.pathname.split('/').pop();
     
@@ -95,5 +95,5 @@
         }
     });
     </script>
-</article>
+</section>
 {{ end }} 
